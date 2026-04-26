@@ -9,25 +9,9 @@ const print = std.debug.print;
 
 pub fn main() !void {
     // Prints to stderr, ignoring potential errors.
+    while (true) {
 
-    const fd = try createTmpFile("hellooo there");
-    defer posix.close(fd);
-
-    var io = try IO.init(64);
-    defer io.deinit();
-
-    var buf: [4096]u8 = undefined;
-    var completion = iotypes.Completion{
-        .callback = callback,
-        .op = .{ .read = .{
-            .buf = &buf,
-            .fd = fd,
-            .offset = 0,
-        }},
-    };
-
-    io.add(&completion);
-    try io.flush();
+    }
 }
 
 fn callback(c: *iotypes.Completion) void {

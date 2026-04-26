@@ -1,15 +1,6 @@
 const std = @import("std");
 const linux = std.os.linux;
 
-// pub const Operation = struct {
-//     type: Type,
-//     fd: linux.fd_t,
-// };
-//
-// pub const Type = enum(u8) {
-// };
-//
-
 pub const Completion = struct {
     callback: *const fn (*Completion) void,
     op: Operation,
@@ -25,6 +16,7 @@ pub const Completion = struct {
         switch (self.op) {
             .read => |*r| sqe.prep_read(r.fd, r.buf, r.offset),
             .write => |*w| sqe.prep_write(w.fd, w.buf, w.offset),
+            .open => |*o| sqe.prep_openat(o.dfd, o.path, o.flags, o.mode),
         }
     }
 };
@@ -39,7 +31,13 @@ pub const Operation = union(enum) {
         fd: linux.fd_t,
         buf: []u8,
         offset: u64,
-    }
+    },
+    open: struct {
+        path: [*:0]const u8,
+        flags: linux.O,
+        mode: linux.mode_t,
+        dfd: linux.fd_t = linux.AT.FDCWD,
+    },
 };
 
 // test "test operation" {
